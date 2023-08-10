@@ -52,6 +52,7 @@ const getReviews = async (
     data: reviews,
   }
 }
+
 const getReview = async (
   id: number | string,
 ): Promise<IGenericResponse<Reviews | null>> => {

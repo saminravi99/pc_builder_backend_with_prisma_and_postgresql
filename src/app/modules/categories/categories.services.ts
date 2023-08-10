@@ -1,49 +1,84 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { PrismaClient, Categories } from '@prisma/client'
+import { IGenericResponse } from '../../../interfaces/common'
+import { IPaginationOptions } from '../../../interfaces/pagination'
+import { paginationHelpers } from '../../../helpers/paginationHelper'
 
 const prisma = new PrismaClient()
 
-const createCategory = async (data: Categories): Promise<Categories> => {
+const createCategory = async (
+  data: Categories,
+): Promise<IGenericResponse<Categories>> => {
   const newCategory = await prisma.categories.create({
     data,
   })
 
-  return newCategory
+  return {
+    data: newCategory,
+  }
 }
 
-const updateCategory = (
+const getCategories = async (
+  paginationOptions: IPaginationOptions,
+): Promise<IGenericResponse<Categories[]>> => {
+  const { page, limit, skip, sortBy, sortOrder } =
+    paginationHelpers.calculatePagination(paginationOptions)
+  const categories = await prisma.categories.findMany({
+    take: limit,
+    skip,
+    orderBy: {
+      [sortBy]: sortOrder,
+    },
+  })
+  const total = await prisma.categories.count()
+
+  return {
+    meta: {
+      page,
+      limit,
+      total,
+    },
+    data: categories,
+  }
+}
+
+const getCategory = async (
+  id: number | string,
+): Promise<IGenericResponse<Categories | null>> => {
+  const category = await prisma.categories.findUnique({
+    where: { id: Number(id) },
+  })
+
+  return {
+    data: category,
+  }
+}
+
+const updateCategory = async (
   id: number | string,
   data: Categories,
-): Promise<Categories | null> => {
-  const updatedCategory = prisma.categories.update({
+): Promise<IGenericResponse<Categories | null>> => {
+  const updatedCategory = await prisma.categories.update({
     where: { id: Number(id) },
     data,
   })
 
-  return updatedCategory
+  return {
+    data: updatedCategory,
+  }
 }
 
-const deleteCategory = (id: number | string): Promise<Categories | null> => {
-  const deletedCategory = prisma.categories.delete({
+const deleteCategory = async (
+  id: number | string,
+): Promise<IGenericResponse<Categories | null>> => {
+  const deletedCategory = await prisma.categories.delete({
     where: { id: Number(id) },
   })
 
-  return deletedCategory
-}
-
-const getCategory = (id: number | string): Promise<Categories | null> => {
-  const category = prisma.categories.findUnique({
-    where: { id: Number(id) },
-  })
-
-  return category
-}
-
-const getCategories = (): Promise<Categories[]> => {
-  const categories = prisma.categories.findMany()
-
-  return categories
+  return {
+    data: deletedCategory,
+  }
 }
 
 export const CategoriesServices = {
