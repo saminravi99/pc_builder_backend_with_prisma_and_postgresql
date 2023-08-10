@@ -1,3 +1,6 @@
+-- CreateEnum
+CREATE TYPE "Role" AS ENUM ('USER', 'ADMIN');
+
 -- CreateTable
 CREATE TABLE "users" (
     "id" SERIAL NOT NULL,
@@ -8,6 +11,7 @@ CREATE TABLE "users" (
     "last_name" TEXT,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
+    "role" "Role" NOT NULL DEFAULT 'USER',
 
     CONSTRAINT "users_pkey" PRIMARY KEY ("id")
 );
@@ -25,7 +29,8 @@ CREATE TABLE "categories" (
 -- CreateTable
 CREATE TABLE "components" (
     "id" SERIAL NOT NULL,
-    "categoryId" INTEGER NOT NULL,
+    "category_id" INTEGER NOT NULL,
+    "name" TEXT NOT NULL,
     "brand" TEXT NOT NULL,
     "model" TEXT NOT NULL,
     "description" TEXT NOT NULL,
@@ -38,32 +43,32 @@ CREATE TABLE "components" (
 );
 
 -- CreateTable
-CREATE TABLE "Reviews" (
+CREATE TABLE "reviews" (
     "id" SERIAL NOT NULL,
     "user_id" INTEGER NOT NULL,
-    "componentId" INTEGER NOT NULL,
+    "component_id" INTEGER NOT NULL,
     "rating" INTEGER NOT NULL,
     "comment" TEXT,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
 
-    CONSTRAINT "Reviews_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "reviews_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
-CREATE TABLE "Builder" (
+CREATE TABLE "builders" (
     "id" SERIAL NOT NULL,
-    "userId" INTEGER NOT NULL,
+    "user_id" INTEGER NOT NULL,
     "name" TEXT NOT NULL,
     "description" TEXT NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
 
-    CONSTRAINT "Builder_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "builders_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
-CREATE TABLE "BuildComponents" (
+CREATE TABLE "build_components" (
     "id" SERIAL NOT NULL,
     "build_id" INTEGER NOT NULL,
     "component_id" INTEGER NOT NULL,
@@ -71,7 +76,7 @@ CREATE TABLE "BuildComponents" (
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
 
-    CONSTRAINT "BuildComponents_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "build_components_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateIndex
@@ -84,19 +89,19 @@ CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
 CREATE UNIQUE INDEX "categories_name_key" ON "categories"("name");
 
 -- AddForeignKey
-ALTER TABLE "components" ADD CONSTRAINT "components_categoryId_fkey" FOREIGN KEY ("categoryId") REFERENCES "categories"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "components" ADD CONSTRAINT "components_category_id_fkey" FOREIGN KEY ("category_id") REFERENCES "categories"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Reviews" ADD CONSTRAINT "Reviews_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "reviews" ADD CONSTRAINT "reviews_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Reviews" ADD CONSTRAINT "Reviews_componentId_fkey" FOREIGN KEY ("componentId") REFERENCES "components"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "reviews" ADD CONSTRAINT "reviews_component_id_fkey" FOREIGN KEY ("component_id") REFERENCES "components"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Builder" ADD CONSTRAINT "Builder_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "builders" ADD CONSTRAINT "builders_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "BuildComponents" ADD CONSTRAINT "BuildComponents_build_id_fkey" FOREIGN KEY ("build_id") REFERENCES "Builder"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "build_components" ADD CONSTRAINT "build_components_build_id_fkey" FOREIGN KEY ("build_id") REFERENCES "builders"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "BuildComponents" ADD CONSTRAINT "BuildComponents_component_id_fkey" FOREIGN KEY ("component_id") REFERENCES "components"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "build_components" ADD CONSTRAINT "build_components_component_id_fkey" FOREIGN KEY ("component_id") REFERENCES "components"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

@@ -1,6 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { PrismaClient, Reviews } from '@prisma/client'
+import { IGenericResponse } from '../../../interfaces/common'
+import { paginationHelpers } from '../../../helpers/paginationHelper'
+import { IPaginationOptions } from '../../../interfaces/pagination'
 
 const prisma = new PrismaClient()
 
@@ -12,38 +15,89 @@ const createReview = async (data: Reviews): Promise<Reviews> => {
   return newReview
 }
 
-const updateReview = (
+const getReviews = async (
+  paginationOptions: IPaginationOptions,
+): Promise<IGenericResponse<Reviews[]>> => {
+  const { page, limit, skip, sortBy, sortOrder } =
+    paginationHelpers.calculatePagination(paginationOptions)
+  const reviews = await prisma.reviews.findMany({
+    include: {
+      components: {
+        include: {
+          category: true,
+        },
+      },
+      users: {
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+          email: true,
+        },
+      },
+    },
+    take: limit,
+    skip,
+    orderBy: {
+      [sortBy]: sortOrder,
+    },
+  })
+  const total = await prisma.reviews.count()
+  return {
+    meta: {
+      page,
+      limit,
+      total,
+    },
+    data: reviews,
+  }
+}
+const getReview = async (
+  id: number | string,
+): Promise<IGenericResponse<Reviews | null>> => {
+  const review = await prisma.reviews.findUnique({
+    where: { id: Number(id) },
+    include: {
+      components: true,
+      users: {
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+          email: true,
+        },
+      },
+    },
+  })
+  return {
+    data: review,
+  }
+}
+
+const updateReview = async (
   id: number | string,
   data: Reviews,
-): Promise<Reviews | null> => {
-  const updatedReview = prisma.reviews.update({
+): Promise<IGenericResponse<Reviews | null>> => {
+  const updatedReview = await prisma.reviews.update({
     where: { id: Number(id) },
     data,
   })
 
-  return updatedReview
+  return {
+    data: updatedReview,
+  }
 }
 
-const deleteReview = (id: number | string): Promise<Reviews | null> => {
-  const deletedReview = prisma.reviews.delete({
+const deleteReview = async (
+  id: number | string,
+): Promise<IGenericResponse<Reviews | null>> => {
+  const deletedReview = await prisma.reviews.delete({
     where: { id: Number(id) },
   })
 
-  return deletedReview
-}
-
-const getReview = (id: number | string): Promise<Reviews | null> => {
-  const Review = prisma.reviews.findUnique({
-    where: { id: Number(id) },
-  })
-
-  return Review
-}
-
-const getReviews = (): Promise<Reviews[]> => {
-  const Reviews = prisma.reviews.findMany()
-
-  return Reviews
+  return {
+    data: deletedReview,
+  }
 }
 
 export const ReviewsServices = {

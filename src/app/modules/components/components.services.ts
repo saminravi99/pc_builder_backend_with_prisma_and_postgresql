@@ -14,6 +14,9 @@ const createComponent = async (
 ): Promise<IGenericResponse<Components>> => {
   const newComponent = await prisma.components.create({
     data,
+    include: {
+      category: true,
+    },
   })
   return {
     data: newComponent,
@@ -72,6 +75,21 @@ const getComponents = async (
 
   const components = await prisma.components.findMany({
     where: whereCondition,
+    include: {
+      category: true,
+      reviews: {
+        include: {
+          users: {
+            select: {
+              id: true,
+              firstName: true,
+              lastName: true,
+              email: true,
+            },
+          },
+        },
+      },
+    },
     orderBy,
     skip,
     take: limit,
@@ -96,8 +114,11 @@ const getComponent = async (
 ): Promise<IGenericResponse<Components | null>> => {
   const component = await prisma.components.findUnique({
     where: { id: Number(id) },
+    include: {
+      category: true,
+      reviews: true,
+    },
   })
-  console.log(component, 'component')
   return {
     data: component,
   }
@@ -109,6 +130,21 @@ const updateComponent = async (
 ): Promise<Components | null> => {
   const updatedComponent = prisma.components.update({
     where: { id: Number(id) },
+    include: {
+      category: true,
+      reviews: {
+        include: {
+          users: {
+            select: {
+              id: true,
+              firstName: true,
+              lastName: true,
+              email: true,
+            },
+          },
+        },
+      },
+    },
     data,
   })
 
@@ -120,6 +156,21 @@ const deleteComponent = async (
 ): Promise<Components | null> => {
   const deletedComponent = prisma.components.delete({
     where: { id: Number(id) },
+    include: {
+      category: true,
+      reviews: {
+        include: {
+          users: {
+            select: {
+              id: true,
+              firstName: true,
+              lastName: true,
+              email: true,
+            },
+          },
+        },
+      },
+    },
   })
 
   return deletedComponent

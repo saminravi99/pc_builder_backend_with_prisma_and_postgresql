@@ -78,7 +78,7 @@ model Builder {
   users           Users             @relation(fields: [userId], references: [id])
   buildComponents BuildComponents[]
 
-  @@map("buildes")
+  @@map("builders")
 }
 
 model BuildComponents {
