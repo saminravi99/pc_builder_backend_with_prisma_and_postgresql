@@ -1,0 +1,99 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Users {
+  id           Int       @id @default(autoincrement())
+  username     String    @unique
+  email        String    @unique
+  passwordHash String    @map("password_hash")
+  firstName    String?   @map("first_name")
+  lastName     String?   @map("last_name")
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+  reviews      Reviews[]
+  role         Role      @default(USER)
+  builders     Builder[]
+
+  @@map("users")
+}
+
+model Categories {
+  id         Int          @id @default(autoincrement())
+  name       String       @unique
+  createdAt  DateTime     @default(now()) @map("created_at")
+  updatedAt  DateTime     @updatedAt @map("updated_at")
+  components Components[]
+
+  @@map("categories")
+}
+
+model Components {
+  id              Int               @id @default(autoincrement())
+  categoryId      Int
+  brand           String
+  model           String
+  description     String
+  price           Decimal
+  stock           Int
+  createdAt       DateTime          @default(now()) @map("created_at")
+  updatedAt       DateTime          @updatedAt @map("updated_at")
+  category        Categories        @relation(fields: [categoryId], references: [id])
+  reviews         Reviews[]
+  buildComponents BuildComponents[]
+
+  @@map("components")
+}
+
+model Reviews {
+  id          Int        @id @default(autoincrement())
+  userId      Int        @map("user_id")
+  componentId Int
+  rating      Int
+  comment     String?
+  createdAt   DateTime   @default(now()) @map("created_at")
+  updatedAt   DateTime   @updatedAt @map("updated_at")
+  users       Users      @relation(fields: [userId], references: [id])
+  components  Components @relation(fields: [componentId], references: [id])
+
+  @@map("reviews")
+}
+
+model Builder {
+  id              Int               @id @default(autoincrement())
+  userId          Int
+  name            String
+  description     String
+  createdAt       DateTime          @default(now()) @map("created_at")
+  updatedAt       DateTime          @updatedAt @map("updated_at")
+  users           Users             @relation(fields: [userId], references: [id])
+  buildComponents BuildComponents[]
+
+  @@map("buildes")
+}
+
+model BuildComponents {
+  id          Int        @id @default(autoincrement())
+  buildId     Int        @map("build_id")
+  componentId Int        @map("component_id")
+  quantity    Int
+  createdAt   DateTime   @default(now()) @map("created_at")
+  updatedAt   DateTime   @updatedAt @map("updated_at")
+  builder     Builder    @relation(fields: [buildId], references: [id])
+  components  Components @relation(fields: [componentId], references: [id])
+
+  @@map("build_components")
+}
+
+enum Role {
+  USER
+  ADMIN
+}
