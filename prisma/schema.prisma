@@ -38,7 +38,8 @@ model Categories {
 
 model Components {
   id              Int               @id @default(autoincrement())
-  categoryId      Int
+  categoryId      Int               @map("category_id")
+  name            String
   brand           String
   model           String
   description     String
@@ -56,7 +57,7 @@ model Components {
 model Reviews {
   id          Int        @id @default(autoincrement())
   userId      Int        @map("user_id")
-  componentId Int
+  componentId Int       @map("component_id")
   rating      Int
   comment     String?
   createdAt   DateTime   @default(now()) @map("created_at")
@@ -69,7 +70,7 @@ model Reviews {
 
 model Builder {
   id              Int               @id @default(autoincrement())
-  userId          Int
+  userId          Int              @map("user_id")
   name            String
   description     String
   createdAt       DateTime          @default(now()) @map("created_at")

@@ -4,6 +4,9 @@ import { ComponentsServices } from './components.services'
 import catchAsync from '../../../shared/catchAsync'
 import { Request, RequestHandler, Response } from 'express'
 import httpStatus from 'http-status'
+import { componentsFilterableFields } from './components.constants'
+import pick from '../../../shared/pick'
+import { paginationFields } from '../../../constants/pagination'
 
 const createComponent: RequestHandler = catchAsync(
   async (req: Request, res: Response) => {
@@ -64,13 +67,20 @@ const getComponent: RequestHandler = catchAsync(
 
 const getComponents: RequestHandler = catchAsync(
   async (req: Request, res: Response) => {
-    const result = await ComponentsServices.getComponents()
+    const filters = pick(req.query, componentsFilterableFields)
+    const paginationOptions = pick(req.query, paginationFields)
+
+    const result = await ComponentsServices.getComponents(
+      filters,
+      paginationOptions,
+    )
 
     sendResponse<Components[]>(res, {
       statusCode: httpStatus.OK,
       success: true,
       message: 'Components fetched successfully!',
-      data: result,
+      data: result.data,
+      meta: result.meta,
     })
   },
 )
