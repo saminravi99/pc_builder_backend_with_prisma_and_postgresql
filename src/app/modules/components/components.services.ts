@@ -9,40 +9,15 @@ import { IGenericResponse } from '../../../interfaces/common'
 
 const prisma = new PrismaClient()
 
-const createComponent = async (data: Components): Promise<Components> => {
+const createComponent = async (
+  data: Components,
+): Promise<IGenericResponse<Components>> => {
   const newComponent = await prisma.components.create({
     data,
   })
-
-  return newComponent
-}
-
-const updateComponent = (
-  id: number | string,
-  data: Components,
-): Promise<Components | null> => {
-  const updatedComponent = prisma.components.update({
-    where: { id: Number(id) },
-    data,
-  })
-
-  return updatedComponent
-}
-
-const deleteComponent = (id: number | string): Promise<Components | null> => {
-  const deletedComponent = prisma.components.delete({
-    where: { id: Number(id) },
-  })
-
-  return deletedComponent
-}
-
-const getComponent = (id: number | string): Promise<Components | null> => {
-  const Component = prisma.components.findUnique({
-    where: { id: Number(id) },
-  })
-
-  return Component
+  return {
+    data: newComponent,
+  }
 }
 
 const getComponents = async (
@@ -114,6 +89,40 @@ const getComponents = async (
     },
     data: components,
   }
+}
+
+const getComponent = async (
+  id: number | string,
+): Promise<IGenericResponse<Components | null>> => {
+  const component = await prisma.components.findUnique({
+    where: { id: Number(id) },
+  })
+  console.log(component, 'component')
+  return {
+    data: component,
+  }
+}
+
+const updateComponent = async (
+  id: number | string,
+  data: Components,
+): Promise<Components | null> => {
+  const updatedComponent = prisma.components.update({
+    where: { id: Number(id) },
+    data,
+  })
+
+  return updatedComponent
+}
+
+const deleteComponent = async (
+  id: number | string,
+): Promise<Components | null> => {
+  const deletedComponent = prisma.components.delete({
+    where: { id: Number(id) },
+  })
+
+  return deletedComponent
 }
 
 export const ComponentsServices = {

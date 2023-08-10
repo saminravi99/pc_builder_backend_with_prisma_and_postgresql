@@ -17,7 +17,43 @@ const createComponent: RequestHandler = catchAsync(
       statusCode: httpStatus.OK,
       success: true,
       message: 'Component created successfully!',
-      data: result,
+      data: result.data,
+    })
+  },
+)
+
+const getComponents: RequestHandler = catchAsync(
+  async (req: Request, res: Response) => {
+    const filters = pick(req.query, componentsFilterableFields)
+    const paginationOptions = pick(req.query, paginationFields)
+
+    const result = await ComponentsServices.getComponents(
+      filters,
+      paginationOptions,
+    )
+
+    sendResponse<Components[]>(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: 'Components fetched successfully!',
+      data: result.data,
+      meta: result.meta,
+    })
+  },
+)
+
+const getComponent: RequestHandler = catchAsync(
+  async (req: Request, res: Response) => {
+    const { id } = req.params
+    const result = await ComponentsServices.getComponent(id)
+
+    sendResponse<Components>(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: result.data
+        ? 'Component fetched successfully!'
+        : 'Component not found!',
+      data: result.data,
     })
   },
 )
@@ -47,40 +83,6 @@ const deleteComponent: RequestHandler = catchAsync(
       success: true,
       message: 'Component deleted successfully!',
       data: result,
-    })
-  },
-)
-
-const getComponent: RequestHandler = catchAsync(
-  async (req: Request, res: Response) => {
-    const { id } = req.params
-    const result = await ComponentsServices.getComponent(id)
-
-    sendResponse<Components>(res, {
-      statusCode: httpStatus.OK,
-      success: true,
-      message: 'Component fetched successfully!',
-      data: result,
-    })
-  },
-)
-
-const getComponents: RequestHandler = catchAsync(
-  async (req: Request, res: Response) => {
-    const filters = pick(req.query, componentsFilterableFields)
-    const paginationOptions = pick(req.query, paginationFields)
-
-    const result = await ComponentsServices.getComponents(
-      filters,
-      paginationOptions,
-    )
-
-    sendResponse<Components[]>(res, {
-      statusCode: httpStatus.OK,
-      success: true,
-      message: 'Components fetched successfully!',
-      data: result.data,
-      meta: result.meta,
     })
   },
 )

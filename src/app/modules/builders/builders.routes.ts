@@ -2,7 +2,7 @@ import express from 'express'
 import { BuildersController } from './builders.controller'
 const router = express.Router()
 
-router.post('/create-user', BuildersController.createBuilder)
+router.post('/create-builder', BuildersController.createBuilder)
 
 router.get('/', BuildersController.getBuilders)
 

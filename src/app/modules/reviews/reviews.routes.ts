@@ -2,7 +2,7 @@ import express from 'express'
 import { ReviewsController } from './reviews.controller'
 const router = express.Router()
 
-router.post('/create-user', ReviewsController.createReview)
+router.post('/create-review', ReviewsController.createReview)
 
 router.get('/', ReviewsController.getReviews)
 

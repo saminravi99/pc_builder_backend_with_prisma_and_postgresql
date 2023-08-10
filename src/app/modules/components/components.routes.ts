@@ -2,7 +2,7 @@ import express from 'express'
 import { ComponentsController } from './components.controller'
 const router = express.Router()
 
-router.post('/create-user', ComponentsController.createComponent)
+router.post('/create-component', ComponentsController.createComponent)
 
 router.get('/', ComponentsController.getComponents)
 

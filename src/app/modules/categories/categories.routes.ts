@@ -2,7 +2,7 @@ import express from 'express'
 import { CategoriesController } from './categories.controller'
 const router = express.Router()
 
-router.post('/create-user', CategoriesController.createCategory)
+router.post('/create-category', CategoriesController.createCategory)
 
 router.get('/', CategoriesController.getCategories)
 
