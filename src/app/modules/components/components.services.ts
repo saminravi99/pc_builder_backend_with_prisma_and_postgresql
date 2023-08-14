@@ -73,6 +73,111 @@ const getComponents = async (
     }
   }
 
+  //so AND condition looks like
+  const cond = {
+    AND: [
+      {
+        OR: [
+          {
+            name: {
+              contains: 'searchTerm',
+              mode: 'insensitive',
+            },
+          },
+          {
+            description: {
+              contains: 'searchTerm',
+              mode: 'insensitive',
+            },
+          },
+        ],
+      },
+      {
+        category: {
+          equals: 'category',
+        },
+      },
+      {
+        brand: {
+          equals: 'brand',
+        },
+      },
+      {
+        model: {
+          equals: 'model',
+        },
+      },
+      {
+        price: {
+          equals: 100,
+        },
+      },
+      {
+        price: {
+          lte: 100,
+        },
+      },
+      {
+        price: {
+          gte: 100,
+        },
+      },
+      {
+        price: {
+          in: [100, 200],
+        },
+      },
+      {
+        price: {
+          notIn: [100, 200],
+        },
+      },
+      {
+        price: {
+          lt: 100,
+        },
+      },
+      {
+        price: {
+          gt: 100,
+        },
+      },
+      {
+        price: {
+          not: 100,
+        },
+      },
+      {
+        price: {
+          not: {
+            equals: 100,
+          },
+        },
+      },
+      {
+        price: {
+          not: {
+            in: [100, 200],
+          },
+        },
+      },
+      {
+        price: {
+          not: {
+            lt: 100,
+          },
+        },
+      },
+      {
+        price: {
+          not: {
+            gt: 100,
+          },
+        },
+      },
+    ],
+  }
+  console.log(cond)
   const components = await prisma.components.findMany({
     where: whereCondition,
     include: {
